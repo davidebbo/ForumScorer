@@ -1,4 +1,9 @@
-﻿@{
+﻿@using Newtonsoft.Json;
+
+@{
+    string dataFile = Server.MapPath("~/App_Data/data.json");
+    string json = File.ReadAllText(dataFile);
+    dynamic data = JsonConvert.DeserializeObject(json);
 }
 
 <!DOCTYPE html>
@@ -12,5 +17,12 @@
     <div>
     Forum Scorer
     </div>
+
+    <ul>
+        @foreach (var user in data)
+        {
+            <li>@user.Name: @user.Score</li>
+        }
+    </ul>
 </body>
 </html>
