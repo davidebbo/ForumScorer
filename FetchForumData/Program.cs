@@ -58,7 +58,7 @@ namespace FetchForumData
         private static int GetScoreFromRss(XElement root)
         {
             XNamespace ns = "";
-            DateTime cutoff = DateTime.Now.AddDays(-7); // Only look at past 7 days
+            DateTime cutoff = DateTime.Now.AddDays(-28);
             int score = 0;
 
             var titles = new HashSet<string>();
