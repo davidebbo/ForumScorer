@@ -21,6 +21,8 @@
     <ul>
         @foreach (var user in data)
         {
+            if (user.Score == 0) { continue; }
+
             <li>@user.Name: @user.Score</li>
         }
     </ul>
