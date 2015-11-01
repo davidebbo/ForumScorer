@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace FetchForumData
 {
@@ -11,14 +9,39 @@ namespace FetchForumData
     {
         static int Main(string[] args)
         {
-            string usersFile = Path.GetFullPath(@"..\..\..\ForumScorer\App_Data\users.txt");
-            if (!File.Exists(usersFile))
+            // App_Data folder in Azure
+            string appDataFolder = @"D:\home\site\wwwroot\app_data";
+            if (!Directory.Exists(appDataFolder))
             {
-                Console.WriteLine($"Can't find users file '{usersFile}'.");
-                return 1;
+                // App_Data folder in local development
+                appDataFolder = Path.GetFullPath(@"..\..\..\ForumScorer\App_Data");
+                if (!Directory.Exists(appDataFolder))
+                {
+                    Console.WriteLine($"Can't find App_Data folder '{appDataFolder}'.");
+                    return 1;
+                }
             }
 
+            string usersFile = Path.Combine(appDataFolder, "users.txt");
+            var scores = File.ReadAllLines(usersFile).Select(u => GetUserData(u)).OrderByDescending(d => d.Score);
+
+            Console.WriteLine(JsonConvert.SerializeObject(scores, Formatting.Indented));
             return 0;
+        }
+
+        private static UserData GetUserData(string user)
+        {
+            return new UserData
+            {
+                Name = user,
+                Score = 0
+            };
+        }
+
+        class UserData
+        {
+            public string Name { get; set; }
+            public int Score { get; set; }
         }
     }
 }
