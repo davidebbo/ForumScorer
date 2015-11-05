@@ -14,9 +14,9 @@
     <title>Forum Scorer</title>
 </head>
 <body>
-    <h2>Forum Scorer</h2>
+    <h1>MSDN Forum Scorer for the Web Apps team</h1>
 
-    <h3>This week's leaderboard (the week ends on Friday)</h3>
+    <h2>This week's leaderboard (the week ends on Friday)</h2>
     <ul>
         @foreach (var user in data.OrderByDescending(u=>u.WeekScore))
         {
@@ -26,7 +26,7 @@
         }
     </ul>
 
-    <h3>Last week's leaderboard</h3>
+    <h2>Last week's leaderboard</h2>
     <ul>
         @foreach (var user in data.OrderByDescending(u => u.PreviousWeekScore))
         {
@@ -36,9 +36,16 @@
         }
     </ul>
 
-    <h3>Scoring notes</h3>
+    <h3>Notes</h3>
 
-    Click on a user's name to see their activity detail on MSDN. Points are give as follows:
+    <ul>
+        <li>This counts activity in all MSDN forums; not just <a href="https://social.msdn.microsoft.com/Forums/azure/en-US/home?forum=windowsazurewebsitespreview">Web Apps</a></li>
+        <li>Click on a user's name to see their activity detail on MSDN</li>
+        <li>Counts are updated every hour using a WebJob</li>
+        <li>Sources are on <a href="https://github.com/davidebbo/ForumScorer">https://github.com/davidebbo/ForumScorer</a> if you want to make a pull request</li>
+    </ul>
+
+    Points are given as follows:
 
     <ul>
         <li>20 points for quickly answering a question</li>
