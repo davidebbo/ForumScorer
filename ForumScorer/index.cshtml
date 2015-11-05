@@ -21,7 +21,7 @@
     <ul>
         @foreach (var user in data.OrderByDescending(u=>u.WeekScore))
         {
-            if (user.Score == 0) { break; }
+            if (user.WeekScore == 0) { break; }
 
             <li>@user.Name: @user.WeekScore</li>
         }
@@ -30,7 +30,7 @@
     <ul>
         @foreach (var user in data.OrderByDescending(u => u.PreviousWeekScore))
         {
-            if (user.Score == 0) { break; }
+            if (user.PreviousWeekScore == 0) { break; }
 
             <li>@user.Name: @user.PreviousWeekScore</li>
         }
