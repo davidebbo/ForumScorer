@@ -14,26 +14,37 @@
     <title>Forum Scorer</title>
 </head>
 <body>
-    <div>
-    Forum Scorer
-    </div>
+    <h2>Forum Scorer</h2>
 
+    <h3>This week's leaderboard (the week ends on Friday)</h3>
     <ul>
         @foreach (var user in data.OrderByDescending(u=>u.WeekScore))
         {
             if (user.WeekScore == 0) { break; }
 
-            <li>@user.Name: @user.WeekScore</li>
+            <li><a href="https://social.msdn.microsoft.com/Profile/@user.Name/activity">@user.Name</a>: @user.WeekScore</li>
         }
     </ul>
 
+    <h3>Last week's leaderboard</h3>
     <ul>
         @foreach (var user in data.OrderByDescending(u => u.PreviousWeekScore))
         {
             if (user.PreviousWeekScore == 0) { break; }
 
-            <li>@user.Name: @user.PreviousWeekScore</li>
+            <li><a href="https://social.msdn.microsoft.com/Profile/@user.Name/activity">@user.Name</a>: @user.PreviousWeekScore</li>
         }
+    </ul>
+
+    <h3>Scoring notes</h3>
+
+    Click on a user's name to see their activity detail on MSDN. Points are give as follows:
+
+    <ul>
+        <li>20 points for quickly answering a question</li>
+        <li>15 points for answering a question</li>
+        <li>5 points for contributing a helpful post</li>
+        <li>1 for responding to a question (additional responses to the same question don't count)</li>
     </ul>
 </body>
 </html>
