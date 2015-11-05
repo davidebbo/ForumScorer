@@ -25,7 +25,7 @@ namespace FetchForumData
             }
 
             string usersFile = Path.Combine(appDataFolder, "users.txt");
-            var scores = File.ReadAllLines(usersFile).Select(u => GetUserData(u)).OrderByDescending(d => d.Score);
+            var scores = File.ReadAllLines(usersFile).Select(u => GetUserData(u));
 
             File.WriteAllText(Path.Combine(appDataFolder, "data.json"), JsonConvert.SerializeObject(scores, Formatting.Indented));
             return 0;
@@ -33,33 +33,37 @@ namespace FetchForumData
 
         private static UserData GetUserData(string user)
         {
-            return new UserData
-            {
-                Name = user,
-                Score = GetUserScore(user)
-            };
+            var userData = new UserData { Name = user };
+
+            GetUserScore(userData);
+
+            return userData;
         }
 
-        private static int GetUserScore(string user)
+        private static void GetUserScore(UserData userData)
         {
-            Console.WriteLine($"Processing user '{user}'");
+            Console.WriteLine($"Processing user '{userData.Name}'");
             try
             {
-                var root = XElement.Load($"https://social.msdn.microsoft.com/Profile/u/activities/feed?displayName={user}");
-                return GetScoreFromRss(root);
+                var root = XElement.Load($"https://social.msdn.microsoft.com/Profile/u/activities/feed?displayName={userData.Name}");
+                GetScoreFromRss(userData, root);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                return -1;
+                userData.WeekScore = -1;
             }
         }
 
-        private static int GetScoreFromRss(XElement root)
+        private static void GetScoreFromRss(UserData userData, XElement root)
         {
             XNamespace ns = "";
-            DateTime cutoff = DateTime.Now.AddDays(-28);
-            int score = 0;
+
+            var today = DateTime.UtcNow.Date;
+            int dayOfWeek = (int)today.DayOfWeek;
+            dayOfWeek = (dayOfWeek + 1) % 7;    // We wrap the week Friday night (utc)
+            DateTime firstDayOfThisWeek = today.AddDays(-dayOfWeek);
+            DateTime firstDayOfLastWeek = firstDayOfThisWeek.AddDays(-7);
 
             var titles = new HashSet<string>();
 
@@ -68,39 +72,53 @@ namespace FetchForumData
                 string pubDate = item.Descendants(ns + "pubDate").FirstOrDefault()?.Value;
                 string title = item.Descendants(ns + "title").FirstOrDefault()?.Value;
 
-                // Don't process if title isidentical
+                // Don't process if title is identical
                 if (titles.Contains(title)) continue;
 
                 titles.Add(title);
 
                 var dt = DateTime.Parse(pubDate);
-                if (dt < cutoff) break;
+
+                int newScore = 0;
 
                 if (title.StartsWith("Quickly answered the question"))
                 {
-                    score += 20;
+                    newScore += 20;
                 }
                 else if (title.StartsWith("Answered the question"))
                 {
-                    score += 15;
+                    newScore += 15;
                 }
                 else if (title.StartsWith("Contributed a helpful post"))
                 {
-                    score += 5;
+                    newScore += 5;
                 }
                 else if (title.StartsWith("Replied to a forums thread"))
                 {
-                    score += 1;
+                    newScore += 1;
+                }
+
+                if (dt > firstDayOfThisWeek)
+                {
+                    userData.WeekScore += newScore;
+                }
+                else if (dt > firstDayOfLastWeek)
+                {
+                    userData.PreviousWeekScore += newScore;
+                }
+                else
+                {
+                    // Older than we process
+                    break;
                 }
             }
-
-            return score;
         }
 
         class UserData
         {
             public string Name { get; set; }
-            public int Score { get; set; }
+            public int WeekScore { get; set; }
+            public int PreviousWeekScore { get; set; }
         }
     }
 }

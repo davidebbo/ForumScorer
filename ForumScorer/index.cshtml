@@ -3,7 +3,7 @@
 @{
     string dataFile = Server.MapPath("~/App_Data/data.json");
     string json = File.ReadAllText(dataFile);
-    dynamic data = JsonConvert.DeserializeObject(json);
+    var data = (IEnumerable<dynamic>)JsonConvert.DeserializeObject(json);
 }
 
 <!DOCTYPE html>
@@ -19,11 +19,20 @@
     </div>
 
     <ul>
-        @foreach (var user in data)
+        @foreach (var user in data.OrderByDescending(u=>u.WeekScore))
         {
-            if (user.Score == 0) { continue; }
+            if (user.Score == 0) { break; }
 
-            <li>@user.Name: @user.Score</li>
+            <li>@user.Name: @user.WeekScore</li>
+        }
+    </ul>
+
+    <ul>
+        @foreach (var user in data.OrderByDescending(u => u.PreviousWeekScore))
+        {
+            if (user.Score == 0) { break; }
+
+            <li>@user.Name: @user.PreviousWeekScore</li>
         }
     </ul>
 </body>
