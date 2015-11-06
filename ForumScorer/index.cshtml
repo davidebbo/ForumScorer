@@ -12,46 +12,81 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Forum Scorer</title>
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <h1>MSDN Forum Scorer for the Web Apps team</h1>
+    <div class="container body-content">
+        <div class="jumbotron">
+            <h1>Antares Forum Scorer</h1>
+        </div>
 
-    <h2>This week's leaderboard (the week ends on Friday)</h2>
-    <ul>
-        @foreach (var user in data.OrderByDescending(u=>u.WeekScore))
-        {
-            if (user.WeekScore == 0) { break; }
+        <div class="panel panel-default">
+            <div class="panel-heading"><h2>This week's leaderboard (the week ends on Friday)</h2></div>
 
-            <li><img src="https://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=@user.Name" /> <a href="https://social.msdn.microsoft.com/Profile/@user.Name/activity">@user.Name</a>: @user.WeekScore</li>
-        }
-    </ul>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>User</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                @foreach (var user in data.OrderByDescending(u => u.WeekScore))
+                {
+                    if (user.WeekScore == 0) { break; }
 
-    <h2>Last week's leaderboard</h2>
-    <ul>
-        @foreach (var user in data.OrderByDescending(u => u.PreviousWeekScore))
-        {
-            if (user.PreviousWeekScore == 0) { break; }
+                    <tr>
+                        <td><img src="https://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=@user.Name" /></td>
+                        <td><a href="https://social.msdn.microsoft.com/Profile/@user.Name/activity">@user.Name</a></td>
+                        <td>@user.WeekScore</td>
+                    </tr>
+                }
+            </table>
+        </div>
 
-            <li><img src="https://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=@user.Name" /> <a href="https://social.msdn.microsoft.com/Profile/@user.Name/activity">@user.Name</a>: @user.PreviousWeekScore</li>
-        }
-    </ul>
+        <div class="panel panel-default">
+            <div class="panel-heading"><h2>Last week's leaderboard</h2></div>
 
-    <h3>Notes</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>User</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                @foreach (var user in data.OrderByDescending(u => u.PreviousWeekScore))
+                {
+                    if (user.PreviousWeekScore == 0) { break; }
 
-    <ul>
-        <li>This counts activity in all MSDN forums; not just <a href="https://social.msdn.microsoft.com/Forums/azure/en-US/home?forum=windowsazurewebsitespreview">Web Apps</a></li>
-        <li>Click on a user's name to see their activity detail on MSDN</li>
-        <li>Counts are updated every hour using a WebJob</li>
-        <li>Sources are on <a href="https://github.com/davidebbo/ForumScorer">https://github.com/davidebbo/ForumScorer</a> if you want to make a pull request</li>
-    </ul>
+                    <tr>
+                        <td><img src="https://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=@user.Name" /></td>
+                        <td><a href="https://social.msdn.microsoft.com/Profile/@user.Name/activity">@user.Name</a></td>
+                        <td>@user.PreviousWeekScore</td>
+                    </tr>
+                }
+            </table>
+        </div>
 
-    Points are given as follows:
+        <div class="panel panel-default">
+            <div class="panel-heading"><h2>Notes</h2></div>
 
-    <ul>
-        <li>20 points for quickly answering a question</li>
-        <li>15 points for answering a question</li>
-        <li>5 points for contributing a helpful post</li>
-        <li>1 for responding to a question (additional responses to the same question don't count)</li>
-    </ul>
-</body>
+            <ul class="list-group">
+                <li class="list-group-item">This counts activity in all MSDN forums; not just <a href="https://social.msdn.microsoft.com/Forums/azure/en-US/home?forum=windowsazurewebsitespreview">Web Apps</a></li>
+                <li class="list-group-item">Click on a user's name to see their activity detail on MSDN</li>
+                <li class="list-group-item">Counts are updated every hour using a WebJob</li>
+                <li class="list-group-item">Sources are on <a href="https://github.com/davidebbo/ForumScorer">https://github.com/davidebbo/ForumScorer</a> if you want to make a pull request</li>
+            </ul>
+
+            <div class="panel-heading"><h4>Points are given as follows:</h4></div>
+
+            <ul class="list-group">
+                <li class="list-group-item">20 points for quickly answering a question</li>
+                <li class="list-group-item">15 points for answering a question</li>
+                <li class="list-group-item">5 points for contributing a helpful post</li>
+                <li class="list-group-item">1 for responding to a question (additional responses to the same question don't count)</li>
+            </ul>
+        </div>
+    </div>
 </html>
