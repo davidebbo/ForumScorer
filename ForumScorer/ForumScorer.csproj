@@ -106,7 +106,12 @@
     </Content>
     <Content Include="index.cshtml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Models\ForumModels.csproj">
+      <Project>{3f64e71e-949f-4d76-ab89-00641f40a817}</Project>
+      <Name>ForumModels</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
   </ItemGroup>
