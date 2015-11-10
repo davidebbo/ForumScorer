@@ -100,7 +100,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App_Data\users.txt" />
+    <None Include="App_Data\users.json" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

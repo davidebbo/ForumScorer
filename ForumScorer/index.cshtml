@@ -1,9 +1,10 @@
-﻿@using Newtonsoft.Json;
+﻿@using ForumModels;
+@using Newtonsoft.Json;
 
 @{
     string dataFile = Server.MapPath("~/App_Data/data.json");
     string json = File.ReadAllText(dataFile);
-    var data = (IEnumerable<dynamic>)JsonConvert.DeserializeObject(json);
+    var users = JsonConvert.DeserializeObject<List<User>>(json);
 }
 
 <!DOCTYPE html>
@@ -32,7 +33,7 @@
                         <th>Score</th>
                     </tr>
                 </thead>
-                @foreach (var user in data.OrderByDescending(u => u.WeekScore))
+                @foreach (var user in users.OrderByDescending(u => u.WeekScore))
                 {
                     if (user.WeekScore == 0) { break; }
 
@@ -56,7 +57,7 @@
                         <th>Score</th>
                     </tr>
                 </thead>
-                @foreach (var user in data.OrderByDescending(u => u.PreviousWeekScore))
+                @foreach (var user in users.OrderByDescending(u => u.PreviousWeekScore))
                 {
                     if (user.PreviousWeekScore == 0) { break; }
 
