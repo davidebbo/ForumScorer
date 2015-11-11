@@ -1,14 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net;
+using System.Net.Http;
 using System.Xml.Linq;
+using Newtonsoft.Json;
 
 namespace ForumModels
 {
     public class User
     {
+        DateTimeOffset _firstDayOfLastWeek;
+        DateTimeOffset _firstDayOfThisWeek;
+
         public string Name { get; set; }
 
         public string MSDNName { get; set; }
@@ -19,16 +24,25 @@ namespace ForumModels
 
         public void CalculateScores()
         {
-            GetMSDNScore();
-            GetStackOverflowScore();
+            var today = DateTimeOffset.UtcNow.Date;
+            int dayOfWeek = (int)today.DayOfWeek;
+            dayOfWeek = (dayOfWeek + 1) % 7;    // We wrap the week Friday night (utc)
+            _firstDayOfThisWeek = today.AddDays(-dayOfWeek);
+            _firstDayOfLastWeek = _firstDayOfThisWeek.AddDays(-7);
+
+            CalculateMSDNScore();
+            //CalculateStackOverflowScores();
         }
 
-        private void GetMSDNScore()
+        void CalculateMSDNScore()
         {
+            if (String.IsNullOrWhiteSpace(MSDNName))
+                return;
+
             try
             {
                 var root = XElement.Load($"https://social.msdn.microsoft.com/Profile/u/activities/feed?displayName={MSDNName}");
-                GetScoreFromRss(root);
+                CalculateScoreFromRss(root);
             }
             catch (Exception e)
             {
@@ -37,15 +51,9 @@ namespace ForumModels
             }
         }
 
-        private void GetScoreFromRss(XElement root)
+        void CalculateScoreFromRss(XElement root)
         {
             XNamespace ns = "";
-
-            var today = DateTime.UtcNow.Date;
-            int dayOfWeek = (int)today.DayOfWeek;
-            dayOfWeek = (dayOfWeek + 1) % 7;    // We wrap the week Friday night (utc)
-            DateTime firstDayOfThisWeek = today.AddDays(-dayOfWeek);
-            DateTime firstDayOfLastWeek = firstDayOfThisWeek.AddDays(-7);
 
             var titles = new HashSet<string>();
 
@@ -59,7 +67,7 @@ namespace ForumModels
 
                 titles.Add(title);
 
-                var dt = DateTime.Parse(pubDate);
+                var dt = DateTimeOffset.Parse(pubDate);
 
                 int newScore = 0;
 
@@ -80,11 +88,11 @@ namespace ForumModels
                     newScore += 1;
                 }
 
-                if (dt > firstDayOfThisWeek)
+                if (dt > _firstDayOfThisWeek)
                 {
                     WeekScore += newScore;
                 }
-                else if (dt > firstDayOfLastWeek)
+                else if (dt > _firstDayOfLastWeek)
                 {
                     PreviousWeekScore += newScore;
                 }
@@ -96,8 +104,37 @@ namespace ForumModels
             }
         }
 
-        private void GetStackOverflowScore()
+        void CalculateStackOverflowScores()
         {
+            if (String.IsNullOrWhiteSpace(StackOverflowID))
+                return;
+
+            PreviousWeekScore += GetStackOverflowReputation(_firstDayOfLastWeek, _firstDayOfThisWeek);
+            WeekScore += GetStackOverflowReputation(_firstDayOfThisWeek, DateTimeOffset.UtcNow);
+        }
+
+        int GetStackOverflowReputation(DateTimeOffset start, DateTimeOffset end)
+        {
+            string stackOverflowKey = ConfigurationManager.AppSettings["StackOverflowKey"];
+
+            string queryUrl = String.Format(
+                "http://api.stackexchange.com/2.2/users/{0}/reputation?fromdate={1}&todate={2}& key={3}&site=stackoverflow",
+                StackOverflowID, start.ToUnixTimeSeconds(), end.ToUnixTimeSeconds(), stackOverflowKey);
+
+            string json;
+            using (var client = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate }))
+            {
+                json = client.GetStringAsync(queryUrl).Result;
+            }
+
+            var items = JsonConvert.DeserializeObject<dynamic>(json).items;
+
+            foreach (var item in items)
+            {
+                int qqq = item.reputation_change;
+            }
+
+            return 0;
         }
 
         public override string ToString()
