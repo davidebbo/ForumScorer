@@ -2,7 +2,7 @@
 
 @{
     var users = (IEnumerable<User>)PageData[0];
-    var f = (Func<User, int>)PageData[1];
+    var f = (Func<User, Scores>)PageData[1];
     string panelTitle = (string)PageData[2];
 }
 
@@ -19,12 +19,12 @@
         </thead>
         @foreach (var user in users.OrderByDescending(f))
         {
-            if (f(user) == 0) { break; }
+            Scores scores = f(user);
 
             <tr>
                 <td><img src="https://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=@user.MSDNName" /></td>
                 <td><a href="https://social.msdn.microsoft.com/Profile/@user.MSDNName/activity">@user.Name</a></td>
-                <td>@f(user)</td>
+                <td>@scores.MSDN</td>
             </tr>
         }
     </table>

@@ -22,8 +22,8 @@
             <h1>Antares Forum Scorer</h1>
         </div>
 
-        @RenderPage("ScoreList.cshtml", users, (Func<User, int>)(u => u.WeekScore), "This week's leaderboard (the week ends on Friday)")
-        @RenderPage("ScoreList.cshtml", users, (Func<User, int>)(u => u.PreviousWeekScore), "Last week's leaderboard")
+        @RenderPage("ScoreList.cshtml", users, (Func<User, Scores>)(u => u.WeekScores), "This week's leaderboard (the week ends on Friday)")
+        @RenderPage("ScoreList.cshtml", users, (Func<User, Scores>)(u => u.PreviousWeekScores), "Last week's leaderboard")
 
 
         <div class="panel panel-default">

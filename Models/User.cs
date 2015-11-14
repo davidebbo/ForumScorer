@@ -19,8 +19,8 @@ namespace ForumModels
         public string MSDNName { get; set; }
         public string StackOverflowID { get; set; }
 
-        public int WeekScore { get; set; }
-        public int PreviousWeekScore { get; set; }
+        public Scores WeekScores { get; } = new Scores();
+        public Scores PreviousWeekScores { get; } = new Scores();
 
         public void CalculateScores()
         {
@@ -42,16 +42,16 @@ namespace ForumModels
             try
             {
                 var root = XElement.Load($"https://social.msdn.microsoft.com/Profile/u/activities/feed?displayName={MSDNName}");
-                CalculateScoreFromRss(root);
+                CalculateMSDNScoresFromRss(root);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                WeekScore = -1;
+                WeekScores.MSDN = -1;
             }
         }
 
-        void CalculateScoreFromRss(XElement root)
+        void CalculateMSDNScoresFromRss(XElement root)
         {
             XNamespace ns = "";
 
@@ -90,11 +90,11 @@ namespace ForumModels
 
                 if (dt > _firstDayOfThisWeek)
                 {
-                    WeekScore += newScore;
+                    WeekScores.MSDN += newScore;
                 }
                 else if (dt > _firstDayOfLastWeek)
                 {
-                    PreviousWeekScore += newScore;
+                    PreviousWeekScores.MSDN += newScore;
                 }
                 else
                 {
@@ -109,8 +109,8 @@ namespace ForumModels
             if (String.IsNullOrWhiteSpace(StackOverflowID))
                 return;
 
-            PreviousWeekScore += GetStackOverflowReputation(_firstDayOfLastWeek, _firstDayOfThisWeek);
-            WeekScore += GetStackOverflowReputation(_firstDayOfThisWeek, DateTimeOffset.UtcNow);
+            PreviousWeekScores.StackOverflow += GetStackOverflowReputation(_firstDayOfLastWeek, _firstDayOfThisWeek);
+            WeekScores.StackOverflow += GetStackOverflowReputation(_firstDayOfThisWeek, DateTimeOffset.UtcNow);
         }
 
         int GetStackOverflowReputation(DateTimeOffset start, DateTimeOffset end)
