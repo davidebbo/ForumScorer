@@ -1,0 +1,31 @@
+﻿@using ForumModels;
+
+@{
+    var users = (IEnumerable<User>)PageData[0];
+    var f = (Func<User, int>)PageData[1];
+    string panelTitle = (string)PageData[2];
+}
+
+<div class="panel panel-default">
+    <div class="panel-heading"><h2>@panelTitle</h2></div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>User</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        @foreach (var user in users.OrderByDescending(f))
+        {
+            if (f(user) == 0) { break; }
+
+            <tr>
+                <td><img src="https://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=@user.MSDNName" /></td>
+                <td><a href="https://social.msdn.microsoft.com/Profile/@user.MSDNName/activity">@user.Name</a></td>
+                <td>@f(user)</td>
+            </tr>
+        }
+    </table>
+</div>
