@@ -31,7 +31,7 @@ namespace ForumModels
             _firstDayOfLastWeek = _firstDayOfThisWeek.AddDays(-7);
 
             CalculateMSDNScore();
-            //CalculateStackOverflowScores();
+            CalculateStackOverflowScores();
         }
 
         void CalculateMSDNScore()
@@ -73,15 +73,15 @@ namespace ForumModels
 
                 if (title.StartsWith("Quickly answered the question"))
                 {
-                    newScore += 20;
+                    newScore += 25;
                 }
                 else if (title.StartsWith("Answered the question"))
                 {
-                    newScore += 15;
+                    newScore += 20;
                 }
                 else if (title.StartsWith("Contributed a helpful post"))
                 {
-                    newScore += 5;
+                    newScore += 10;
                 }
                 else if (title.StartsWith("Replied to a forums thread"))
                 {
@@ -129,12 +129,13 @@ namespace ForumModels
 
             var items = JsonConvert.DeserializeObject<dynamic>(json).items;
 
+            int reputation = 0;
             foreach (var item in items)
             {
-                int qqq = item.reputation_change;
+                reputation += (int)item.reputation_change;
             }
 
-            return 0;
+            return reputation;
         }
 
         public override string ToString()

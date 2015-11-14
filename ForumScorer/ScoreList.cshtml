@@ -14,7 +14,9 @@
             <tr>
                 <th></th>
                 <th>User</th>
-                <th>Score</th>
+                <th>MSDN</th>
+                <th>StackOverflow</th>
+                <th>Total</th>
             </tr>
         </thead>
         @foreach (var user in users.OrderByDescending(f))
@@ -23,8 +25,10 @@
 
             <tr>
                 <td><img src="https://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=@user.MSDNName" /></td>
-                <td><a href="https://social.msdn.microsoft.com/Profile/@user.MSDNName/activity">@user.Name</a></td>
-                <td>@scores.MSDN</td>
+                <td>@user.Name</td>
+                <td><a href="https://social.msdn.microsoft.com/Profile/@user.MSDNName/activity">@scores.MSDN</a></td>
+                <td><a href="http://stackoverflow.com/users/@user.StackOverflowID?tab=reputation">@scores.StackOverflow</a></td>
+                <td>@scores.Total</td>
             </tr>
         }
     </table>
