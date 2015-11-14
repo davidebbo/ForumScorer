@@ -22,6 +22,7 @@
         @foreach (var user in users.OrderByDescending(f))
         {
             Scores scores = f(user);
+            if (scores.Total == 0) { continue; };
 
             <tr>
                 <td><img src="https://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=@user.MSDNName" /></td>
