@@ -31,7 +31,15 @@ namespace FetchForumData
 
             foreach (var user in users)
             {
-                user.CalculateScores();
+                Console.WriteLine($"Processing {user.Name}");
+                try
+                {
+                    user.CalculateScores();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Error: " + e);
+                }
             }
 
             File.WriteAllText(Path.Combine(appDataFolder, "data.json"), JsonConvert.SerializeObject(users, Formatting.Indented));
