@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -22,6 +23,15 @@ namespace ForumModels
             string queryUrl = $"http://api.stackexchange.com{path}?key={_stackOverflowKey}&site=stackoverflow&{query}";
             string json = await _httpClient.GetStringAsync(queryUrl);
             return JsonConvert.DeserializeObject<dynamic>(json).items;
+        }
+
+        public static int GetIdOfFirstPostOfDay(DateTimeOffset day)
+        {
+            var items = Query(
+                $"/2.2/posts",
+                $"pagesize=1&order=asc&min={day.ToUnixTimeSeconds()}&max={day.AddDays(1).ToUnixTimeSeconds()}&sort=creation").Result;
+
+            return items[0].post_id;
         }
     }
 }

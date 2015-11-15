@@ -7,8 +7,7 @@ namespace ForumModels
 {
     public class User
     {
-        DateTimeOffset _firstDayOfLastWeek;
-        DateTimeOffset _firstDayOfThisWeek;
+        UserList _userList;
 
         public string Name { get; set; }
 
@@ -18,13 +17,9 @@ namespace ForumModels
         public Scores WeekScores { get; } = new Scores();
         public Scores PreviousWeekScores { get; } = new Scores();
 
-        public void CalculateScores()
+        public void CalculateScores(UserList userList)
         {
-            var today = DateTimeOffset.UtcNow.Date;
-            int dayOfWeek = (int)today.DayOfWeek;
-            dayOfWeek = (dayOfWeek + 1) % 7;    // We wrap the week Friday night (utc)
-            _firstDayOfThisWeek = today.AddDays(-dayOfWeek);
-            _firstDayOfLastWeek = _firstDayOfThisWeek.AddDays(-7);
+            _userList = userList;
 
             CalculateMSDNScore();
             CalculateStackOverflowScores();
@@ -84,11 +79,11 @@ namespace ForumModels
                     newScore += 1;
                 }
 
-                if (dt > _firstDayOfThisWeek)
+                if (dt > _userList.FirstDayOfThisWeek)
                 {
                     WeekScores.MSDN += newScore;
                 }
-                else if (dt > _firstDayOfLastWeek)
+                else if (dt > _userList.FirstDayOfLastWeek)
                 {
                     PreviousWeekScores.MSDN += newScore;
                 }
@@ -105,11 +100,11 @@ namespace ForumModels
             if (String.IsNullOrWhiteSpace(StackOverflowID))
                 return;
 
-            PreviousWeekScores.StackOverflow += GetStackOverflowReputation(_firstDayOfLastWeek, _firstDayOfThisWeek);
-            WeekScores.StackOverflow += GetStackOverflowReputation(_firstDayOfThisWeek, DateTimeOffset.UtcNow);
+            PreviousWeekScores.StackOverflow += GetStackOverflowReputation(_userList.FirstDayOfLastWeek, _userList.FirstDayOfThisWeek, _userList.FirstStackOverflowPostForLastWeek);
+            WeekScores.StackOverflow += GetStackOverflowReputation(_userList.FirstDayOfThisWeek, DateTimeOffset.UtcNow, _userList.FirstStackOverflowPostForThisWeek);
         }
 
-        int GetStackOverflowReputation(DateTimeOffset start, DateTimeOffset end)
+        int GetStackOverflowReputation(DateTimeOffset start, DateTimeOffset end, int firstPostIdToConsider)
         {
             var items = StackOverflowHelpers.Query(
                 $"/2.2/users/{StackOverflowID}/reputation",
@@ -118,6 +113,10 @@ namespace ForumModels
             int reputation = 0;
             foreach (var item in items)
             {
+                // Ignore if the post that the event is attached to is too old
+                if (item.post_id < firstPostIdToConsider)
+                    continue;
+
                 reputation += (int)item.reputation_change;
             }
 
