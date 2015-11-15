@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Xml.Linq;
-using Newtonsoft.Json;
 
 namespace ForumModels
 {
@@ -115,19 +111,9 @@ namespace ForumModels
 
         int GetStackOverflowReputation(DateTimeOffset start, DateTimeOffset end)
         {
-            string stackOverflowKey = ConfigurationManager.AppSettings["StackOverflowKey"];
-
-            string queryUrl = String.Format(
-                "http://api.stackexchange.com/2.2/users/{0}/reputation?fromdate={1}&todate={2}&key={3}&site=stackoverflow",
-                StackOverflowID, start.ToUnixTimeSeconds(), end.ToUnixTimeSeconds(), stackOverflowKey);
-
-            string json;
-            using (var client = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate }))
-            {
-                json = client.GetStringAsync(queryUrl).Result;
-            }
-
-            var items = JsonConvert.DeserializeObject<dynamic>(json).items;
+            var items = StackOverflowHelpers.Query(
+                $"/2.2/users/{StackOverflowID}/reputation",
+                $"fromdate={start.ToUnixTimeSeconds()}&todate={end.ToUnixTimeSeconds()}").Result;
 
             int reputation = 0;
             foreach (var item in items)
