@@ -118,7 +118,7 @@ namespace ForumModels
             string stackOverflowKey = ConfigurationManager.AppSettings["StackOverflowKey"];
 
             string queryUrl = String.Format(
-                "http://api.stackexchange.com/2.2/users/{0}/reputation?fromdate={1}&todate={2}& key={3}&site=stackoverflow",
+                "http://api.stackexchange.com/2.2/users/{0}/reputation?fromdate={1}&todate={2}&key={3}&site=stackoverflow",
                 StackOverflowID, start.ToUnixTimeSeconds(), end.ToUnixTimeSeconds(), stackOverflowKey);
 
             string json;
