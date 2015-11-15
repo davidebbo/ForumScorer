@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace ForumModels
 {
-    static class StackOverflowHelpers
+    public static class StackOverflowHelpers
     {
         static string _stackOverflowKey;
         static HttpClient _httpClient;

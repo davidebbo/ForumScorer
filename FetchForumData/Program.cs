@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Xml.Linq;
 using ForumModels;
-using Newtonsoft.Json;
 
 namespace FetchForumData
 {
@@ -26,23 +22,10 @@ namespace FetchForumData
             }
 
             string usersFile = Path.Combine(appDataFolder, "users.json");
-            string userJson = File.ReadAllText(usersFile);
-            var users = JsonConvert.DeserializeObject<List<User>>(userJson);
+            var userList = new UserList(usersFile);
+            userList.CalculateScores();
+            userList.SaveDataFile(Path.Combine(appDataFolder, "data.json"));
 
-            foreach (var user in users)
-            {
-                Console.WriteLine($"Processing {user.Name}");
-                try
-                {
-                    user.CalculateScores();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Error: " + e);
-                }
-            }
-
-            File.WriteAllText(Path.Combine(appDataFolder, "data.json"), JsonConvert.SerializeObject(users, Formatting.Indented));
             return 0;
         }
     }
