@@ -64,7 +64,7 @@ namespace ForumModels
 
                 if (title.StartsWith("Quickly answered the question"))
                 {
-                    newScore += 25;
+                    newScore += 20;
                 }
                 else if (title.StartsWith("Answered the question"))
                 {
@@ -117,7 +117,27 @@ namespace ForumModels
                 if (item.post_id < firstPostIdToConsider)
                     continue;
 
-                reputation += (int)item.reputation_change;
+                if (item.vote_type == "up_votes")
+                {
+                    if (item.post_type == "answer")
+                    {
+                        // Cap it at 20 (i.e. two upvotes)
+                        reputation += Math.Min((int)item.reputation_change, 20);
+                    }
+                    else
+                    {
+                        // Cap it at 10 (i.e. two upvotes)
+                        reputation += Math.Min((int)item.reputation_change, 10);
+                    }
+                }
+                else if (item.vote_type == "accepts")
+                {
+                    reputation += 15;
+                }
+                else
+                {
+                    // We ignore bounties
+                }
             }
 
             return reputation;
