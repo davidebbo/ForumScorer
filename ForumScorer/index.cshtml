@@ -18,13 +18,16 @@
 </head>
 <body>
     <div class="container body-content">
-        <div class="jumbotron">
-            <h1>App Service Forum Scorer</h1>
+        <div class="page-header text-center">
+            <h1>App Service Forum Leaderboard</h1>
         </div>
 
-        @RenderPage("ScoreList.cshtml", users, (Func<User, Scores>)(u => u.WeekScores), "This week's leaderboard (the week ends on Friday)")
-        @RenderPage("ScoreList.cshtml", users, (Func<User, Scores>)(u => u.PreviousWeekScores), "Last week's leaderboard")
-
+        <table class="table" style="border-top:hidden">
+            <tr>
+                <td width="50%">@RenderPage("ScoreList.cshtml", users, (Func<User, Scores>)(u => u.WeekScores), "Current week")</td>
+                <td>@RenderPage("ScoreList.cshtml", users, (Func<User, Scores>)(u => u.PreviousWeekScores), "Last week")</td>
+            </tr>
+        </table>
 
         <div class="panel panel-default">
             <div class="panel-heading"><h2>Notes</h2></div>

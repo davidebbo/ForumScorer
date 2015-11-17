@@ -11,9 +11,9 @@
 
     <table class="table">
         <thead>
-            <tr>
+            <tr class="lead">
                 <th></th>
-                <th>User</th>
+                <th></th>
                 <th>MSDN</th>
                 <th>StackOverflow</th>
                 <th>Total</th>
@@ -24,8 +24,8 @@
             Scores scores = f(user);
             if (scores.Total == 0) { continue; };
 
-            <tr>
-                <td><img src="https://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=@user.MSDNName" /></td>
+            <tr class="lead">
+                <td><img src="https://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=@user.MSDNName&size=large" /></td>
                 <td>@user.Name</td>
                 <td><a href="https://social.msdn.microsoft.com/Profile/@user.MSDNName/activity">@scores.MSDN</a></td>
                 <td><a href="http://stackoverflow.com/users/@user.StackOverflowID?tab=reputation">@scores.StackOverflow</a></td>
