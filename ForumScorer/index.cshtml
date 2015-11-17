@@ -19,7 +19,7 @@
 <body>
     <div class="container body-content">
         <div class="jumbotron">
-            <h1>Antares Forum Scorer</h1>
+            <h1>App Service Forum Scorer</h1>
         </div>
 
         @RenderPage("ScoreList.cshtml", users, (Func<User, Scores>)(u => u.WeekScores), "This week's leaderboard (the week ends on Friday)")
