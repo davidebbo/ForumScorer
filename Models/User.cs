@@ -135,18 +135,16 @@ namespace ForumModels
                 {
                     if (item.post_type == "answer")
                     {
-                        // Cap it at 20 (i.e. two upvotes)
-                        reputation += Math.Min((int)item.reputation_change, 20);
+                        reputation += 10;
                     }
                     else
                     {
-                        // Cap it at 10 (i.e. two upvotes)
-                        reputation += Math.Min((int)item.reputation_change, 10);
+                        reputation += 5;
                     }
                 }
                 else if (item.vote_type == "accepts")
                 {
-                    reputation += 15;
+                    reputation += 20;
                 }
                 else
                 {
