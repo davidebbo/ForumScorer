@@ -7,15 +7,20 @@ using Newtonsoft.Json;
 
 namespace ForumModels
 {
-    public static class StackOverflowHelpers
+    public static class QueryHelpers
     {
         static string _stackOverflowKey;
         static HttpClient _httpClient;
 
-        static StackOverflowHelpers()
+        static QueryHelpers()
         {
             _stackOverflowKey = ConfigurationManager.AppSettings["StackOverflowKey"];
             _httpClient = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate });
+        }
+
+        public static async Task<string> GetStringAsync(string requestUri)
+        {
+            return await _httpClient.GetStringAsync(requestUri);
         }
 
         public static async Task<dynamic> Query(string path, string query)

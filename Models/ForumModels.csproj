@@ -46,7 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Scores.cs" />
-    <Compile Include="StackOverflowHelpers.cs" />
+    <Compile Include="QueryHelpers.cs" />
     <Compile Include="User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UserList.cs" />

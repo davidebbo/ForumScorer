@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace ForumModels
@@ -25,28 +27,17 @@ namespace ForumModels
 
             // We only count events attached to posts (questions or answers) that we created at most 3 days before
             // the week starts. The idea is to not keep rewarding users for old entries that are getting upticks
-            FirstStackOverflowPostForThisWeek = StackOverflowHelpers.GetIdOfFirstPostOfDay(FirstDayOfThisWeek.AddDays(-3));
-            FirstStackOverflowPostForLastWeek = StackOverflowHelpers.GetIdOfFirstPostOfDay(FirstDayOfLastWeek.AddDays(-3));
+            FirstStackOverflowPostForThisWeek = QueryHelpers.GetIdOfFirstPostOfDay(FirstDayOfThisWeek.AddDays(-3));
+            FirstStackOverflowPostForLastWeek = QueryHelpers.GetIdOfFirstPostOfDay(FirstDayOfLastWeek.AddDays(-3));
 
             string userJson = File.ReadAllText(usersFile);
             _users = JsonConvert.DeserializeObject<List<User>>(userJson);
         }
 
-        public void CalculateScores()
+        public Task CalculateScores()
         {
-
-            foreach (var user in _users)
-            {
-                Console.WriteLine($"Processing {user.Name}");
-                try
-                {
-                    user.CalculateScores(this);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Error: " + e);
-                }
-            }
+            // Calculate the scores for all users in parallel
+            return Task.WhenAll(_users.Select(user => user.CalculateScores(this)));
         }
 
         public void SaveDataFile(string dataFilePath)

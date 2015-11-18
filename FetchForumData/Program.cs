@@ -23,7 +23,7 @@ namespace FetchForumData
 
             string usersFile = Path.Combine(appDataFolder, "users.json");
             var userList = new UserList(usersFile);
-            userList.CalculateScores();
+            userList.CalculateScores().Wait();
             userList.SaveDataFile(Path.Combine(appDataFolder, "data.json"));
 
             return 0;

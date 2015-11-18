@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace ForumModels
@@ -17,22 +18,30 @@ namespace ForumModels
         public Scores WeekScores { get; } = new Scores();
         public Scores PreviousWeekScores { get; } = new Scores();
 
-        public void CalculateScores(UserList userList)
+        public async Task CalculateScores(UserList userList)
         {
+            Console.WriteLine($"Processing {Name}");
+
             _userList = userList;
 
-            CalculateMSDNScore();
-            CalculateStackOverflowScores();
+            try {
+                await Task.WhenAll(CalculateMSDNScore(), CalculateStackOverflowScores());
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error for user {Name}: " + e);
+            }
         }
 
-        void CalculateMSDNScore()
+        async Task CalculateMSDNScore()
         {
             if (String.IsNullOrWhiteSpace(MSDNName))
                 return;
 
             try
             {
-                var root = XElement.Load($"https://social.msdn.microsoft.com/Profile/u/activities/feed?displayName={MSDNName}");
+                string rssXml = await QueryHelpers.GetStringAsync($"https://social.msdn.microsoft.com/Profile/u/activities/feed?displayName={MSDNName}");
+                var root = XElement.Parse(rssXml);
                 CalculateMSDNScoresFromRss(root);
             }
             catch (Exception e)
@@ -95,20 +104,25 @@ namespace ForumModels
             }
         }
 
-        void CalculateStackOverflowScores()
+        async Task CalculateStackOverflowScores()
         {
             if (String.IsNullOrWhiteSpace(StackOverflowID))
                 return;
 
-            PreviousWeekScores.StackOverflow += GetStackOverflowReputation(_userList.FirstDayOfLastWeek, _userList.FirstDayOfThisWeek, _userList.FirstStackOverflowPostForLastWeek);
-            WeekScores.StackOverflow += GetStackOverflowReputation(_userList.FirstDayOfThisWeek, DateTimeOffset.UtcNow, _userList.FirstStackOverflowPostForThisWeek);
+            // Calculate the previous and current week's scores in parallel
+            var stackOverflowScores = await Task.WhenAll(
+                GetStackOverflowReputation(_userList.FirstDayOfLastWeek, _userList.FirstDayOfThisWeek, _userList.FirstStackOverflowPostForLastWeek),
+                GetStackOverflowReputation(_userList.FirstDayOfThisWeek, DateTimeOffset.UtcNow, _userList.FirstStackOverflowPostForThisWeek));
+
+            PreviousWeekScores.StackOverflow += stackOverflowScores[0];
+            WeekScores.StackOverflow += stackOverflowScores[1];
         }
 
-        int GetStackOverflowReputation(DateTimeOffset start, DateTimeOffset end, int firstPostIdToConsider)
+        async Task<int> GetStackOverflowReputation(DateTimeOffset start, DateTimeOffset end, int firstPostIdToConsider)
         {
-            var items = StackOverflowHelpers.Query(
+            dynamic items = await QueryHelpers.Query(
                 $"/2.2/users/{StackOverflowID}/reputation",
-                $"fromdate={start.ToUnixTimeSeconds()}&todate={end.ToUnixTimeSeconds()}").Result;
+                $"fromdate={start.ToUnixTimeSeconds()}&todate={end.ToUnixTimeSeconds()}");
 
             int reputation = 0;
             foreach (var item in items)
