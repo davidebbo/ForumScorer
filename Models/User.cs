@@ -139,7 +139,7 @@ namespace ForumModels
                     }
                     else
                     {
-                        reputation += 5;
+                        // No points for upvotes on questions
                     }
                 }
                 else if (item.vote_type == "accepts")
