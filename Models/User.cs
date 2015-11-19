@@ -30,6 +30,7 @@ namespace ForumModels
             catch (Exception e)
             {
                 Console.WriteLine($"Error for user {Name}: " + e);
+                throw;
             }
         }
 
@@ -38,17 +39,9 @@ namespace ForumModels
             if (String.IsNullOrWhiteSpace(MSDNName))
                 return;
 
-            try
-            {
-                string rssXml = await QueryHelpers.GetStringAsync($"https://social.msdn.microsoft.com/Profile/u/activities/feed?displayName={MSDNName}");
-                var root = XElement.Parse(rssXml);
-                CalculateMSDNScoresFromRss(root);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                WeekScores.MSDN = -1;
-            }
+            string rssXml = await QueryHelpers.GetStringAsync($"https://social.msdn.microsoft.com/Profile/u/activities/feed?displayName={MSDNName}");
+            var root = XElement.Parse(rssXml);
+            CalculateMSDNScoresFromRss(root);
         }
 
         void CalculateMSDNScoresFromRss(XElement root)
