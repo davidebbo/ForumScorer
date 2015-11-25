@@ -81,11 +81,11 @@ namespace ForumModels
                     newScore += 1;
                 }
 
-                if (dt > _userList.FirstDayOfThisWeek)
+                if (dt > _userList.StartOfThisWeek)
                 {
                     WeekScores.MSDN += newScore;
                 }
-                else if (dt > _userList.FirstDayOfLastWeek)
+                else if (dt > _userList.StartOfLastWeek)
                 {
                     PreviousWeekScores.MSDN += newScore;
                 }
@@ -104,8 +104,8 @@ namespace ForumModels
 
             // Calculate the previous and current week's scores in parallel
             var stackOverflowScores = await Task.WhenAll(
-                GetStackOverflowReputation(_userList.FirstDayOfLastWeek, _userList.FirstDayOfThisWeek, _userList.FirstStackOverflowPostForLastWeek),
-                GetStackOverflowReputation(_userList.FirstDayOfThisWeek, DateTimeOffset.UtcNow, _userList.FirstStackOverflowPostForThisWeek));
+                GetStackOverflowReputation(_userList.StartOfLastWeek, _userList.StartOfThisWeek, _userList.FirstStackOverflowPostForLastWeek),
+                GetStackOverflowReputation(_userList.StartOfThisWeek, DateTimeOffset.UtcNow, _userList.FirstStackOverflowPostForThisWeek));
 
             PreviousWeekScores.StackOverflow += stackOverflowScores[0];
             WeekScores.StackOverflow += stackOverflowScores[1];

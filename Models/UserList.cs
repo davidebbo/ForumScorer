@@ -11,24 +11,27 @@ namespace ForumModels
     {
         List<User> _users;
 
-        public DateTimeOffset FirstDayOfLastWeek { get; }
-        public DateTimeOffset FirstDayOfThisWeek { get; }
+        public DateTimeOffset StartOfLastWeek { get; }
+        public DateTimeOffset StartOfThisWeek { get; }
 
         public int FirstStackOverflowPostForLastWeek { get; }
         public int FirstStackOverflowPostForThisWeek { get; }
 
         public UserList(string usersFile)
         {
-            var today = DateTimeOffset.UtcNow.Date;
-            int dayOfWeek = (int)today.DayOfWeek;
-            dayOfWeek = (dayOfWeek + 1) % 7;    // We wrap the week Friday night (utc)
-            FirstDayOfThisWeek = today.AddDays(-dayOfWeek);
-            FirstDayOfLastWeek = FirstDayOfThisWeek.AddDays(-7);
+            var nowLocal = DateTimeOffset.Now;
+            var dayOfWeekLocal = (int)nowLocal.DayOfWeek;
+
+            // +1 because we want to start the week on Monday and not Sunday (local time)
+            var startOfThisWeekLocal = nowLocal.Date.AddDays(-dayOfWeekLocal + 1);
+
+            StartOfThisWeek = startOfThisWeekLocal.ToUniversalTime();
+            StartOfLastWeek = StartOfThisWeek.AddDays(-7);
 
             // We only count events attached to posts (questions or answers) that we created at most 3 days before
             // the week starts. The idea is to not keep rewarding users for old entries that are getting upticks
-            FirstStackOverflowPostForThisWeek = QueryHelpers.GetIdOfFirstPostOfDay(FirstDayOfThisWeek.AddDays(-3));
-            FirstStackOverflowPostForLastWeek = QueryHelpers.GetIdOfFirstPostOfDay(FirstDayOfLastWeek.AddDays(-3));
+            FirstStackOverflowPostForThisWeek = QueryHelpers.GetIdOfFirstPostOfDay(StartOfThisWeek.AddDays(-3));
+            FirstStackOverflowPostForLastWeek = QueryHelpers.GetIdOfFirstPostOfDay(StartOfLastWeek.AddDays(-3));
 
             string userJson = File.ReadAllText(usersFile);
             _users = JsonConvert.DeserializeObject<List<User>>(userJson);
