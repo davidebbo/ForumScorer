@@ -15,8 +15,7 @@ namespace ForumModels
         public string MSDNName { get; set; }
         public string StackOverflowID { get; set; }
 
-        public Scores WeekScores { get; } = new Scores();
-        public Scores PreviousWeekScores { get; } = new Scores();
+        public Scores Scores { get; } = new Scores();
 
         public async Task CalculateScores(UserList userList)
         {
@@ -81,18 +80,9 @@ namespace ForumModels
                     newScore += 1;
                 }
 
-                if (dt > _userList.StartOfThisWeek)
+                if (dt > _userList.StartOfPeriod && dt < _userList.EndOfPeriod)
                 {
-                    WeekScores.MSDN += newScore;
-                }
-                else if (dt > _userList.StartOfLastWeek)
-                {
-                    PreviousWeekScores.MSDN += newScore;
-                }
-                else
-                {
-                    // Older than we process
-                    break;
+                    Scores.MSDN += newScore;
                 }
             }
         }
@@ -102,13 +92,7 @@ namespace ForumModels
             if (String.IsNullOrWhiteSpace(StackOverflowID))
                 return;
 
-            // Calculate the previous and current week's scores in parallel
-            var stackOverflowScores = await Task.WhenAll(
-                GetStackOverflowReputation(_userList.StartOfLastWeek, _userList.StartOfThisWeek, _userList.FirstStackOverflowPostForLastWeek),
-                GetStackOverflowReputation(_userList.StartOfThisWeek, DateTimeOffset.UtcNow, _userList.FirstStackOverflowPostForThisWeek));
-
-            PreviousWeekScores.StackOverflow += stackOverflowScores[0];
-            WeekScores.StackOverflow += stackOverflowScores[1];
+            Scores.StackOverflow = await GetStackOverflowReputation(_userList.StartOfPeriod, _userList.EndOfPeriod, _userList.FirstStackOverflowPost);
         }
 
         async Task<int> GetStackOverflowReputation(DateTimeOffset start, DateTimeOffset end, int firstPostIdToConsider)

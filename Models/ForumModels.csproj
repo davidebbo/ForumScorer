@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers.cs" />
     <Compile Include="Scores.cs" />
     <Compile Include="QueryHelpers.cs" />
     <Compile Include="User.cs" />

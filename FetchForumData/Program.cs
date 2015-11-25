@@ -8,6 +8,9 @@ namespace FetchForumData
     {
         static int Main(string[] args)
         {
+            // A date is optionally passed in on command line. e.g. "11/18/2015"
+            DateTimeOffset startOfWeek = Helpers.GetStartOfWeek(args.Length > 0 ? args[0] : null);
+
             // App_Data folder in Azure
             string appDataFolder = @"D:\home\site\wwwroot\app_data";
             if (!Directory.Exists(appDataFolder))
@@ -22,9 +25,9 @@ namespace FetchForumData
             }
 
             string usersFile = Path.Combine(appDataFolder, "users.json");
-            var userList = new UserList(usersFile);
+            var userList = new UserList(usersFile, startOfWeek);
             userList.CalculateScores().Wait();
-            userList.SaveDataFile(Path.Combine(appDataFolder, "data.json"));
+            userList.SaveDataFile(appDataFolder);
 
             return 0;
         }

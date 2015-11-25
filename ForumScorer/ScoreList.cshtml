@@ -2,8 +2,7 @@
 
 @{
     var users = (IEnumerable<User>)PageData[0];
-    var f = (Func<User, Scores>)PageData[1];
-    string panelTitle = (string)PageData[2];
+    string panelTitle = (string)PageData[1];
 }
 
 <div class="panel panel-default">
@@ -19,9 +18,9 @@
                 <th>Total</th>
             </tr>
         </thead>
-        @foreach (var user in users.OrderByDescending(f))
+        @foreach (var user in users.OrderByDescending(u => u.Scores))
         {
-            Scores scores = f(user);
+            Scores scores = user.Scores;
             if (scores.Total == 0) { continue; };
 
             <tr class="lead">

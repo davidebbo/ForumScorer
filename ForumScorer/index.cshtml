@@ -1,10 +1,29 @@
 ﻿@using ForumModels;
 @using Newtonsoft.Json;
 
+@functions
+{
+    IEnumerable<User> GetUsersData(DateTimeOffset startOfPeriod)
+    {
+        string vpath = "~/App_Data/" + Helpers.GetDataFileNameFromDate(startOfPeriod);
+        string dataFile = Server.MapPath(vpath);
+        if (!File.Exists(dataFile))
+        {
+            return null;
+        }
+
+        string json = File.ReadAllText(dataFile);
+        return JsonConvert.DeserializeObject<List<User>>(json);
+    }
+}
+
 @{
-    string dataFile = Server.MapPath("~/App_Data/data.json");
-    string json = File.ReadAllText(dataFile);
-    var users = JsonConvert.DeserializeObject<List<User>>(json);
+    // A date is optionally passed in on query string. e.g. "11/18/2015"
+    DateTimeOffset startOfWeek = Helpers.GetStartOfWeek(Request["date"]);
+    DateTimeOffset startOfPreviousWeek = startOfWeek.AddDays(-7);
+
+    var users = GetUsersData(startOfWeek);
+    var lastWeeksUsers = GetUsersData(startOfPreviousWeek);
 }
 
 <!DOCTYPE html>
@@ -25,10 +44,10 @@
 
         <table class="table" style="border-top:hidden">
             <tr>
-                <td width="50%">@RenderPage("ScoreList.cshtml", users, (Func<User, Scores>)(u => u.WeekScores), "Current week")
+                <td width="50%">@RenderPage("ScoreList.cshtml", users, "Current week")
                     <div>email davidebb to get your name added</div></td>
                 <td width="20px"></td>
-                <td width="50%">@RenderPage("ScoreList.cshtml", users, (Func<User, Scores>)(u => u.PreviousWeekScores), "Last week")</td>
+                <td width="50%">@RenderPage("ScoreList.cshtml", lastWeeksUsers, "Last week")</td>
             </tr>
         </table>
 

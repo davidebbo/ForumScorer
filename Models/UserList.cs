@@ -11,27 +11,19 @@ namespace ForumModels
     {
         List<User> _users;
 
-        public DateTimeOffset StartOfLastWeek { get; }
-        public DateTimeOffset StartOfThisWeek { get; }
+        public DateTimeOffset StartOfPeriod { get; }
+        public DateTimeOffset EndOfPeriod { get; }
 
-        public int FirstStackOverflowPostForLastWeek { get; }
-        public int FirstStackOverflowPostForThisWeek { get; }
+        public int FirstStackOverflowPost { get; }
 
-        public UserList(string usersFile)
+        public UserList(string usersFile, DateTimeOffset startOfWeek)
         {
-            var nowLocal = DateTimeOffset.Now;
-            var dayOfWeekLocal = (int)nowLocal.DayOfWeek;
-
-            // +1 because we want to start the week on Monday and not Sunday (local time)
-            var startOfThisWeekLocal = nowLocal.Date.AddDays(-dayOfWeekLocal + 1);
-
-            StartOfThisWeek = startOfThisWeekLocal.ToUniversalTime();
-            StartOfLastWeek = StartOfThisWeek.AddDays(-7);
+            StartOfPeriod = startOfWeek.ToUniversalTime();
+            EndOfPeriod = StartOfPeriod.AddDays(7);
 
             // We only count events attached to posts (questions or answers) that we created at most 3 days before
             // the week starts. The idea is to not keep rewarding users for old entries that are getting upticks
-            FirstStackOverflowPostForThisWeek = QueryHelpers.GetIdOfFirstPostOfDay(StartOfThisWeek.AddDays(-3));
-            FirstStackOverflowPostForLastWeek = QueryHelpers.GetIdOfFirstPostOfDay(StartOfLastWeek.AddDays(-3));
+            FirstStackOverflowPost = QueryHelpers.GetIdOfFirstPostOfDay(StartOfPeriod.AddDays(-3));
 
             string userJson = File.ReadAllText(usersFile);
             _users = JsonConvert.DeserializeObject<List<User>>(userJson);
@@ -43,9 +35,10 @@ namespace ForumModels
             return Task.WhenAll(_users.Select(user => user.CalculateScores(this)));
         }
 
-        public void SaveDataFile(string dataFilePath)
+        public void SaveDataFile(string dataFileFolder)
         {
-            File.WriteAllText(dataFilePath, JsonConvert.SerializeObject(_users, Formatting.Indented));
+            string filePath = Path.Combine(dataFileFolder, Helpers.GetDataFileNameFromDate(StartOfPeriod));
+            File.WriteAllText(filePath, JsonConvert.SerializeObject(_users, Formatting.Indented));
         }
     }
 }
