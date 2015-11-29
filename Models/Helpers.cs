@@ -20,8 +20,11 @@ namespace ForumModels
 
             var dayOfWeekLocal = (int)dt.DayOfWeek;
 
-            // +1 because we want to start the week on Monday and not Sunday (local time)
-            return dt.Date.AddDays(-dayOfWeekLocal + 1);
+            // Adjust it so the week starts Monday instead of Sunday
+            dayOfWeekLocal = (dayOfWeekLocal + 6) % 7;
+
+            // Go back to the start of the current week
+            return dt.Date.AddDays(-dayOfWeekLocal);
         }
 
         public static string GetDataFileNameFromDate(DateTimeOffset startOfPeriod)
