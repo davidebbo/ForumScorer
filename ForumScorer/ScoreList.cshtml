@@ -1,12 +1,62 @@
 ﻿@using ForumModels;
+@using Newtonsoft.Json;
+
+@functions
+{
+    IEnumerable<User> GetUsersData(DateTimeOffset startOfPeriod)
+    {
+        string vpath = "~/App_Data/" + Helpers.GetDataFileNameFromDate(startOfPeriod);
+        string dataFile = Server.MapPath(vpath);
+        if (!File.Exists(dataFile))
+        {
+            return null;
+        }
+
+        string json = File.ReadAllText(dataFile);
+        return JsonConvert.DeserializeObject<List<User>>(json);
+    }
+
+    // From http://stackoverflow.com/questions/842057/how-do-i-convert-a-timespan-to-a-formatted-string
+    public static string ToReadableString(TimeSpan span)
+    {
+        string formatted = string.Format("{0}{1}{2}{3}",
+            span.Duration().Days > 0 ? string.Format("{0:0} day{1}, ", span.Days, span.Days == 1 ? String.Empty : "s") : string.Empty,
+            span.Duration().Hours > 0 ? string.Format("{0:0} hour{1}, ", span.Hours, span.Hours == 1 ? String.Empty : "s") : string.Empty,
+            span.Duration().Minutes > 0 ? string.Format("{0:0} minute{1}, ", span.Minutes, span.Minutes == 1 ? String.Empty : "s") : string.Empty,
+            span.Duration().Seconds > 0 ? string.Format("{0:0} second{1}", span.Seconds, span.Seconds == 1 ? String.Empty : "s") : string.Empty);
+
+        if (formatted.EndsWith(", ")) formatted = formatted.Substring(0, formatted.Length - 2);
+
+        if (string.IsNullOrEmpty(formatted)) formatted = "0 seconds";
+
+        return formatted;
+    }
+}
 
 @{
-    var users = (IEnumerable<User>)PageData[0];
+    var startOfWeek = (DateTimeOffset)PageData[0];
+    var lastDayOfWeek = startOfWeek.AddDays(6);
+    var endOfWeek = startOfWeek.AddDays(7);
+    var timeLeft = endOfWeek - DateTimeOffset.Now;
+
+    string timeString;
+    if (timeLeft.TotalMilliseconds > 0)
+    {
+        // For current week, show how much time is left
+        timeString = ToReadableString(timeLeft) + " left";
+    }
+    else
+    {
+        // For previous weeks, show start/end days
+        timeString = startOfWeek.ToString("MM/dd") + " to " + lastDayOfWeek.ToString("MM/dd");
+    }
+
+    var users = GetUsersData(startOfWeek);
     string panelTitle = (string)PageData[1];
 }
 
 <div class="panel panel-default">
-    <div class="panel-heading"><h2>@panelTitle</h2></div>
+    <div class="panel-heading"><h2>@panelTitle: @timeString</h2></div>
 
     <table class="table">
         <thead>
