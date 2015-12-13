@@ -68,10 +68,17 @@
                 <th>Total</th>
             </tr>
         </thead>
+        @{
+            int activeUsers = 0, totalMSDNScore = 0, totalStackOverflowScore = 0;
+        }
         @foreach (var user in users.OrderByDescending(u => u.Scores))
         {
             Scores scores = user.Scores;
             if (scores.Total == 0) { continue; };
+
+            activeUsers++;
+            totalMSDNScore += scores.MSDN;
+            totalStackOverflowScore += scores.StackOverflow;
 
             <tr class="lead">
                 <td><img src="https://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=@user.MSDNName&size=large" /></td>
@@ -81,5 +88,12 @@
                 <td>@scores.Total</td>
             </tr>
         }
+        <tr class="lead">
+            <td></td>
+            <td>All users (@activeUsers)</td>
+            <td>@totalMSDNScore</td>
+            <td>@totalStackOverflowScore</td>
+            <td>@(totalMSDNScore+totalStackOverflowScore)</td>
+        </tr>
     </table>
 </div>
