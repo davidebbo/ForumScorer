@@ -52,12 +52,19 @@
     }
 
     var users = GetUsersData(startOfWeek);
+
     string panelTitle = (string)PageData[1];
 }
 
 <div class="panel panel-default">
     <div class="panel-heading"><h2>@panelTitle: @timeString</h2></div>
 
+    @if (users == null)
+    {
+        <div>No data for this week</div>
+    }
+    else
+    {
     <table class="table">
         <thead>
             <tr class="lead">
@@ -96,4 +103,5 @@
             <td>@(totalMSDNScore+totalStackOverflowScore)</td>
         </tr>
     </table>
+    }
 </div>
