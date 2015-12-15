@@ -6,58 +6,39 @@
     DateTimeOffset startOfPreviousWeek = startOfWeek.AddDays(-7);
 }
 
-<!DOCTYPE html>
+<table class="table" style="border-top:hidden">
+    <tr>
+        <td width="50%">@RenderPage("ScoreList.cshtml", startOfWeek, "Current week")
+            <div>email davidebb to get your name added</div></td>
+        <td width="20px"></td>
+        <td width="50%">@RenderPage("ScoreList.cshtml", startOfPreviousWeek, "Last week")</td>
+    </tr>
+</table>
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Forum Scorer</title>
+<div class="panel panel-default">
+    <div class="panel-heading"><h2>Notes</h2></div>
 
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <div class="body-content" style="margin-left:30px;margin-right:30px">
-        <div class="page-header text-center">
-            <h1>App Service Forum Leaderboard</h1>
-            <h3>http://forumscorer.azurewebsites.net</h3>
-        </div>
+    <ul class="list-group">
+        <li class="list-group-item">This counts activity for all questions; not just Web Apps</li>
+        <li class="list-group-item">Click on a user's MSDN or StackOveflow score to see their activity detail</li>
+        <li class="list-group-item">Score calculation is detailed below</li>
+        <li class="list-group-item">Counts are updated every hour using a WebJob</li>
+        <li class="list-group-item">Sources are on <a href="https://github.com/davidebbo/ForumScorer">https://github.com/davidebbo/ForumScorer</a> if you want to make a pull request</li>
+    </ul>
 
-        <table class="table" style="border-top:hidden">
-            <tr>
-                <td width="50%">@RenderPage("ScoreList.cshtml", startOfWeek, "Current week")
-                    <div>email davidebb to get your name added</div></td>
-                <td width="20px"></td>
-                <td width="50%">@RenderPage("ScoreList.cshtml", startOfPreviousWeek, "Last week")</td>
-            </tr>
-        </table>
+    <div class="panel-heading"><h4>MSDN score calculation</h4></div>
 
-        <div class="panel panel-default">
-            <div class="panel-heading"><h2>Notes</h2></div>
+    <ul class="list-group">
+        <li class="list-group-item">20 points for answering a question</li>
+        <li class="list-group-item">10 points for contributing a helpful post (at most one per thread)</li>
+        <li class="list-group-item">1 for responding to a question (additional responses to the same question don't count)</li>
+    </ul>
 
-            <ul class="list-group">
-                <li class="list-group-item">This counts activity for all questions; not just Web Apps</li>
-                <li class="list-group-item">Click on a user's MSDN or StackOveflow score to see their activity detail</li>
-                <li class="list-group-item">Score calculation is detailed below</li>
-                <li class="list-group-item">Counts are updated every hour using a WebJob</li>
-                <li class="list-group-item">Sources are on <a href="https://github.com/davidebbo/ForumScorer">https://github.com/davidebbo/ForumScorer</a> if you want to make a pull request</li>
-            </ul>
+    <div class="panel-heading"><h4>StackOverflow score calculation</h4></div>
 
-            <div class="panel-heading"><h4>MSDN score calculation</h4></div>
-
-            <ul class="list-group">
-                <li class="list-group-item">20 points for answering a question</li>
-                <li class="list-group-item">10 points for contributing a helpful post (at most one per thread)</li>
-                <li class="list-group-item">1 for responding to a question (additional responses to the same question don't count)</li>
-            </ul>
-
-            <div class="panel-heading"><h4>StackOverflow score calculation</h4></div>
-
-            <ul class="list-group">
-                <li class="list-group-item">Only reputation attached to recent answers are counted</li>
-                <li class="list-group-item">20 points for answering a question</li>
-                <li class="list-group-item">10 points for getting an upvote attached to an answer (at most one per answer)</li>
-            </ul>
-        </div>
-    </div>
-</body>
-</html>
+    <ul class="list-group">
+        <li class="list-group-item">Only reputation attached to recent answers are counted</li>
+        <li class="list-group-item">20 points for answering a question</li>
+        <li class="list-group-item">10 points for getting an upvote attached to an answer (at most one per answer)</li>
+    </ul>
+</div>
