@@ -1,0 +1,63 @@
+﻿@using System.Linq;
+@using ForumModels;
+@using Newtonsoft.Json;
+
+@functions
+{
+    class DataFileInfo
+    {
+        public string Date { get; set; }
+        public int ActiveUsers { get; set; }
+        public int MSDNScore { get; set; }
+        public int StackOverflowScore { get; set; }
+        public int Total { get; set; }
+    }
+
+    IEnumerable<DataFileInfo> GetDataFileInfos()
+    {
+        string appDataFolder = Server.MapPath("~/App_Data/");
+        var dataFiles = Directory.EnumerateFiles(appDataFolder, "20*.*");
+
+        foreach (string dataFile in dataFiles)
+        {
+            string json = File.ReadAllText(dataFile);
+            var users = JsonConvert.DeserializeObject<List<User>>(json);
+
+            var info = new DataFileInfo();
+
+            info.Date = Path.GetFileNameWithoutExtension(dataFile);
+
+            foreach (var user in users)
+            {
+                if (user.Scores.Total==0) { continue; }
+                info.ActiveUsers++;
+                info.MSDNScore += user.Scores.MSDN;
+                info.StackOverflowScore += user.Scores.StackOverflow;
+            }
+
+            yield return info;
+        }
+    }
+}
+
+<table class="table">
+    <thead>
+        <tr class="lead">
+            <th>Week</th>
+            <th>Active Users</th>
+            <th>MSDN</th>
+            <th>StackOverflow</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    @foreach (var info in GetDataFileInfos())
+    {
+        <tr class="lead">
+            <td>@info.Date</td>
+            <td>@info.ActiveUsers</td>
+            <td>@info.MSDNScore</td>
+            <td>@info.StackOverflowScore</td>
+            <td>@(info.MSDNScore+info.StackOverflowScore)</td>
+        </tr>
+    }
+</table>

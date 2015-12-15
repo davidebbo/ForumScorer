@@ -108,6 +108,7 @@
     <Content Include="_ScoreList.cshtml" />
     <Content Include="_Layout.cshtml" />
     <Content Include="_PageStart.cshtml" />
+    <Content Include="Summary.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Models\ForumModels.csproj">
