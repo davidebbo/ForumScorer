@@ -105,7 +105,9 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="index.cshtml" />
-    <Content Include="ScoreList.cshtml" />
+    <Content Include="_ScoreList.cshtml" />
+    <Content Include="_Layout.cshtml" />
+    <Content Include="_PageStart.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Models\ForumModels.csproj">
