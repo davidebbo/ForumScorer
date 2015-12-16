@@ -16,7 +16,13 @@ namespace ForumModels
 
         public int FirstStackOverflowPost { get; }
 
-        public UserList(string usersFile, DateTimeOffset startOfWeek)
+        public UserList(string usersFile)
+        {
+            string userJson = File.ReadAllText(usersFile);
+            _users = JsonConvert.DeserializeObject<List<User>>(userJson);
+        }
+
+        public UserList(string usersFile, DateTimeOffset startOfWeek): this(usersFile)
         {
             StartOfPeriod = startOfWeek.ToUniversalTime();
             EndOfPeriod = StartOfPeriod.AddDays(7);
@@ -24,10 +30,9 @@ namespace ForumModels
             // We only count events attached to posts (questions or answers) that we created at most 3 days before
             // the week starts. The idea is to not keep rewarding users for old entries that are getting upticks
             FirstStackOverflowPost = QueryHelpers.GetIdOfFirstPostOfDay(StartOfPeriod.AddDays(-3));
-
-            string userJson = File.ReadAllText(usersFile);
-            _users = JsonConvert.DeserializeObject<List<User>>(userJson);
         }
+
+        public List<User> Users { get { return _users; } }
 
         public Task CalculateScores()
         {

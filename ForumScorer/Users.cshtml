@@ -1,0 +1,28 @@
+﻿@using ForumModels;
+
+@{ 
+    string usersFile = Server.MapPath("~/App_Data/users.json");
+    var userList = new UserList(usersFile);
+}
+
+<table class="table">
+    <thead>
+        <tr class="lead">
+            <th></th>
+            <th>Name</th>
+            <th>MSDN Name</th>
+            <th>StackOverflow ID</th>
+        </tr>
+    </thead>
+    @{int count = 0; }
+    @foreach (var user in userList.Users)
+    {
+        count++;
+        <tr class="lead">
+            <td>@count</td>
+            <td>@user.Name</td>
+            <td><a href="https://social.msdn.microsoft.com/Profile/@user.MSDNName/activity">@user.MSDNName</a></td>
+            <td><a href="http://stackoverflow.com/users/@user.StackOverflowID?tab=reputation">@user.StackOverflowID</a></td>
+        </tr>
+    }
+</table>

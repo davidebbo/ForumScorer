@@ -109,6 +109,7 @@
     <Content Include="_Layout.cshtml" />
     <Content Include="_PageStart.cshtml" />
     <Content Include="Summary.cshtml" />
+    <Content Include="Users.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Models\ForumModels.csproj">
