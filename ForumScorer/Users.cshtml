@@ -9,6 +9,7 @@
     <thead>
         <tr class="lead">
             <th></th>
+            <th></th>
             <th>Name</th>
             <th>MSDN Name</th>
             <th>StackOverflow ID</th>
@@ -19,7 +20,8 @@
     {
         count++;
         <tr class="lead">
-            <td>@count</td>
+            <td width="20px">@count</td>
+            <td width="20px"><img src="https://i1.social.s-msft.com/profile/u/avatar.jpg?displayname=@user.MSDNName" /></td>
             <td>@user.Name</td>
             <td><a href="https://social.msdn.microsoft.com/Profile/@user.MSDNName/activity">@user.MSDNName</a></td>
             <td><a href="http://stackoverflow.com/users/@user.StackOverflowID?tab=reputation">@user.StackOverflowID</a></td>
