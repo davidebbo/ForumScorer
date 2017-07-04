@@ -54,10 +54,19 @@
     var users = GetUsersData(startOfWeek);
 
     string panelTitle = (string)PageData[1];
+    bool isCurrent = (bool)PageData[2];
 }
 
 <div class="panel panel-default">
-    <div class="panel-heading"><h2>@panelTitle: @timeString</h2></div>
+    <div class="panel-heading"><h2>
+        @if (isCurrent) {
+            <a href="?date=@startOfWeek.AddDays(-7).ToString("MM/dd/yy")"><<</a>
+        }
+        @panelTitle: @timeString
+        @if (isCurrent) {
+            <a href="?date=@startOfWeek.AddDays(+7).ToString("MM/dd/yy")">>></a>
+        }
+    </h2></div>
 
     @if (users == null)
     {

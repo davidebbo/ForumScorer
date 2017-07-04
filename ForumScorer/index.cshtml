@@ -8,12 +8,14 @@
 
 <table class="table" style="border-top:hidden">
     <tr>
-        <td width="50%">@RenderPage("_ScoreList.cshtml", startOfWeek, "Current week")
+        <td width="50%">@RenderPage("_ScoreList.cshtml", startOfWeek, "Current week", true)
             <div>email davidebb to get your name added</div></td>
         <td width="20px"></td>
-        <td width="50%">@RenderPage("_ScoreList.cshtml", startOfPreviousWeek, "Last week")</td>
+        <td width="50%">@RenderPage("_ScoreList.cshtml", startOfPreviousWeek, "Last week", false)</td>
     </tr>
 </table>
+
+<a href="?date=@startOfPreviousWeek.ToString("MM/dd/yy")">Go back one week</a>
 
 <div class="panel panel-default">
     <div class="panel-heading"><h2>Notes</h2></div>
